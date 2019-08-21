@@ -1,0 +1,76 @@
+---  
+- hosts: localhost
+  become: true
+  #become_method: su
+
+  
+  tasks:
+    - name: install apache2
+      apt: name=apache2 update_cache=yes state=latest
+
+      notify:
+        - restart apache2
+
+
+    - name: install mosquitto
+      apt: name=mosquitto update_cache=yes state=latest
+      notify:
+        - restart mosquitto
+
+
+
+    - name: install mosquitto-clients
+      apt: name=mosquitto-clients update_cache=yes state=latest
+      notify:
+       - restart mosquitto
+
+    - name: deploy mosquitto password
+      copy: 
+        src: "mosquitto_password.txt"
+        dest: "/etc/mosquitto/passwd"
+      notify:
+       - restart mosquitto
+
+    - name: deploy mosquitto configuration
+      copy:
+        src: "mosquitto-default.conf"
+        dest: "/etc/mosquitto/conf.d/"
+      notify:
+       - restart mosquitto
+
+
+    - name: Install 
+      vars: 
+        packages: 
+          - mc 
+          - curl 
+      apt: 
+        name: "{{ packages }}" 
+        update_cache: yes 
+
+
+    - name: Some shell stuff 
+      #shell: "ls –la ./" 
+      shell: "/bin/ls -la" 
+      #sudo: yes 
+
+    - name: multiple shell commands 
+      shell: | 
+        /bin/ls 
+        /bin/uname
+
+
+
+
+
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+
+    - name: restart mosquitto
+      systemd:
+        name: mosquitto
+        state: restarted
+        daemon_reload: yes
+      #service: name=mosquitto state=restarted

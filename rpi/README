@@ -1,0 +1,15 @@
+#RPI readme
+1. enable ssh (menu/preferences/raspberry Pi configuration)
+2. login via ssh (ssh pi@$IP)
+3. configure static IP
+edit /etc/dhcpcd.conf
+       interface eth0
+       static ip_address=10.1.1.30/24
+       static routers=10.1.1.1
+       static domain_name_servers=10.1.1.1
+
+OR preferably configure the DHCP server by adding the MAC to the rules.
+
+4. Nodered
+
+bash <(curl -sL https://raw.githubusercontent.com/node-red/raspbian-deb-package/master/resources/update-nodejs-and-nodered)
